@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>HALLOWEEN</title>
+   <style type="text/css">
+      body {
+          margin: 0;
+          overflow: hidden;
+          position: relative;
+      }
+
+      #cursor {
+          position: absolute;
+          pointer-events: none;
+      }
+
+      #timer {
+          position: fixed;
+          top: 10px;
+          left: 10px;
+          font-size: 24px;
+          font-weight: bold;
+          color: rgb(255, 132, 0);
+      }
+
+      .floating-image {
+          position: absolute;
+          width: 200px;
+          height: 200px;
+          background-size: cover;
+      }
+   </style>
+</head>
+
+<body>
+   <div id="cursor">
+        <img src="main.gif" alt="cursor" />
+    </div>
+
+    <div id="timer">30</div>
+
+   <script type="text/javascript">
+      // 커서 이동 기능
+      window.onmousemove = function(e) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+        };
+
+      // 타이머 기능
+      let timeLeft = 30;
+      const timerElement = document.getElementById('timer');
+
+      function updateTimer() {
+          timerElement.textContent = timeLeft;
+          if (timeLeft > 0) {
+              timeLeft--;
+          } else {
+              clearInterval(timerInterval);
+          }
+      }
+
+      const timerInterval = setInterval(updateTimer, 1000);
+
+      // 이미지들을 담을 배열
+      const images = ['shining.png', 'scream.png', 'ling.png'];  // 추가할 이미지를 여기 배열에 넣으세요
+
+      // 각 이미지에 대해 랜덤 이동 및 반사 효과 적용
+      const floatingImages = images.map(imageUrl => {
+          const imgElement = document.createElement('div');
+          imgElement.classList.add('floating-image');
+          imgElement.style.backgroundImage = `url(${imageUrl})`;
+          document.body.appendChild(imgElement);
+
+          // 랜덤 초기 위치 및 속도
+          let posX = Math.random() * (window.innerWidth - 200);
+          let posY = Math.random() * (window.innerHeight - 200);
+          let velocityX = 2 + Math.random() * 2;
+          let velocityY = 2 + Math.random() * 2;
+
+          return { element: imgElement, posX, posY, velocityX, velocityY };
+      });
+
+      // 이미지 이동 함수 (모든 이미지에 대해 적용)
+      function moveImages() {
+          floatingImages.forEach(image => {
+              image.posX += image.velocityX;
+              image.posY += image.velocityY;
+
+              // 화면을 벗어나지 않도록 처리
+              if (image.posX <= 0 || image.posX >= window.innerWidth - 200) {
+                  image.velocityX = -image.velocityX;
+              }
+              if (image.posY <= 0 || image.posY >= window.innerHeight - 200) {
+                  image.velocityY = -image.velocityY;
+              }
+
+              // 위치 갱신
+              image.element.style.left = image.posX + 'px';
+              image.element.style.top = image.posY + 'px';
+          });
+      }
+
+      // 16ms 마다 이미지 위치 갱신
+      setInterval(moveImages, 16);
+   </script>
+</body>
+</html>
